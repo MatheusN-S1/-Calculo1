@@ -1,0 +1,55 @@
+
+
+import numpy as np
+from math import factorial
+
+def diferenca_finita(f, x0, h, ordem=1, pontos=None):
+    """
+    Calcula a derivada de ordem 'ordem' da função f no ponto x0 usando diferenças finitas.
+    f: função a ser derivada
+    x0: ponto de avaliação
+    h: espaçamento
+    ordem: ordem da derivada
+    pontos: número de pontos (opcional, padrão: ordem+1)
+    """
+    if pontos is None:
+        pontos = ordem + 1
+    # Gera os pontos simetricamente ao redor de x0
+    xs = [x0 + (i - pontos//2)*h for i in range(pontos)]
+    # Monta a matriz de Vandermonde para o sistema linear
+    A = np.zeros((pontos, pontos))
+    for i in range(pontos):
+        for j in range(pontos):
+            A[i, j] = (xs[j] - x0)**i / factorial(i)
+    b = np.zeros(pontos)
+    b[ordem] = 1
+    # Resolve o sistema para obter os coeficientes
+    coef = np.linalg.solve(A, b)
+    # Calcula a aproximação da derivada
+    return sum(coef[j] * f(xs[j]) for j in range(pontos))
+
+# Função exemplo: f(x) = exp(x)
+def f(x):
+    return np.exp(x)
+
+# Parâmetro de exemplo
+x0 = 2
+
+# Exemplo de uso:
+import sympy as sp
+
+if __name__ == "__main__":
+    h = 1e-5
+    derivada = diferenca_finita(f, x0, h, ordem=1)
+    print(f"A derivada de f(x) = exp(x) em x0={x0} é aproximadamente {derivada:.10f}")
+
+    # Derivada simbólica com sympy
+    x = sp.symbols('x')
+    f_sym = sp.exp(x)
+    derivada_simbolica = sp.diff(f_sym, x)
+    print("\nExpressão simbólica da derivada:")
+    print(derivada_simbolica)
+    valor_simbolico = derivada_simbolica.subs(x, x0).evalf()
+    print(f"Valor simbólico da derivada em x0={x0}: {valor_simbolico}")
+
+
