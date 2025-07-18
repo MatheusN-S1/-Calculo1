@@ -1,0 +1,32 @@
+import sympy as sp
+
+def soma_riemann(f, a, b, n, tipo='esquerda'):
+    """
+    Calcula a soma de Riemann para a função simbólica f no intervalo [a, b] com n subintervalos.
+    tipo: 'esquerda', 'direita' ou 'meio'
+    """
+    x = sp.symbols('x')
+    dx = (b - a) / n
+    soma = 0
+    for i in range(n):
+        if tipo == 'esquerda':
+            xi = a + i*dx
+        elif tipo == 'direita':
+            xi = a + (i+1)*dx
+        elif tipo == 'meio':
+            xi = a + (i+0.5)*dx
+        else:
+            raise ValueError("tipo deve ser 'esquerda', 'direita' ou 'meio'")
+        soma += f.subs(x, xi)
+    return soma * dx
+
+# Exemplo de uso:
+if __name__ == "__main__":
+    x = sp.symbols('x')
+    f = x**2 + 1  # Troque aqui para qualquer função simbólica
+    a = 0
+    b = 2
+    n = 100
+    
+    resultado = soma_riemann(f, a, b, n, tipo='meio')
+    print(f"Soma de Riemann (meio) de f(x) = x^2 + 1 no intervalo [{a}, {b}] com n={n}: {resultado}")
